@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>week9</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;700&family=Numans&display=swap" rel="stylesheet">
+
+  <style>
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      padding-top:300px;     
+      background:#ffffff;
+      font-family:"Montserrat Alternates",sans-serif;
+    }
+
+    .back{
+      position:fixed;
+      top:24px;
+      left:24px;
+      font-size:16px;
+      font-family:"Numans",sans-serif;
+      color:#666;
+      text-decoration:none;
+      z-index:20;
+    }
+
+    .scene{
+      position:relative;
+      width:min(1449px, 90vw);  
+      margin:auto;
+    }
+
+    .scene-bg{
+      width:100%;
+      display:block;
+    }
+
+    .water-area{
+      position:absolute;
+      left:0; right:0;
+      top:7%;
+      height:32%;
+      pointer-events:none;
+    }
+
+    .duck-wrap{
+      position:absolute;
+      width:250px;           
+      transform:translateY(-50%);
+      cursor:grab;
+      z-index:5;
+      pointer-events:auto;
+    }
+
+    .duck{
+      width:100%;
+      display:block;
+      pointer-events:none;
+    }
+
+    @media (max-width: 768px){
+
+      body{
+        padding-top:190px;  
+      }
+
+      .scene{
+        width:90vw;            
+      }
+
+      .duck-wrap{
+        width:120px;          
+      }
+
+      .water-area{
+        top:3%;           
+        height:20%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<a href="collection.html" class="back">< back</a>
+
+<div class="scene" id="scene">
+  <img src="week9bath.png" class="scene-bg" alt="bath">
+
+  <div class="water-area" id="water">
+    <div class="duck-wrap" id="duck">
+      <img src="duck.png" class="duck" id="duckImg" alt="duck">
+    </div>
+  </div>
+</div>
+
+<audio id="sound" src="ducktoy.mp3" preload="auto"></audio>
+
+<script>
+  const duck = document.getElementById("duck");
+  const duckImg = document.getElementById("duckImg");
+  const water = document.getElementById("water");
+  const sound = document.getElementById("sound");
+
+  function center(){
+    const duckWidth = duck.offsetWidth;
+    const waterWidth = water.clientWidth;
+    duck.style.left = (waterWidth - duckWidth) / 2 + "px";
+    duck.style.top  = "50%";
+  }
+
+  window.addEventListener("load", center);
+  window.addEventListener("resize", center);
+
+  let isDown = false;
+  let isDragging = false;
+  let startClientX = 0;
+  let startLeft = 0;
+
+  function getClientX(e){
+    return e.touches ? e.touches[0].clientX : e.clientX;
+  }
+
+  function handleDown(e){
+    e.preventDefault();
+    isDown = true;
+    isDragging = false;
+    startClientX = getClientX(e);
+    startLeft = parseFloat(duck.style.left) || duck.offsetLeft;
+  }
+
+  function handleMove(e){
+    if (!isDown) return;
+
+    e.preventDefault();
+    const clientX = getClientX(e);
+    const dx = clientX - startClientX;
+
+    if (Math.abs(dx) > 3) isDragging = true;
+
+    const waterWidth = water.clientWidth;
+    const duckWidth = duck.offsetWidth;
+
+    const max = waterWidth - duckWidth;
+    let newLeft = startLeft + dx;
+    newLeft = Math.max(0, Math.min(max, newLeft));
+    duck.style.left = newLeft + "px";
+  }
+
+  function handleUp(){
+    if (!isDown) return;
+    isDown = false;
+
+    if (!isDragging){
+      squeak();
+    }
+  }
+
+  function squeak(){
+    duckImg.src = "duck2.png";
+    sound.currentTime = 0;
+    sound.play().catch(()=>{});
+    setTimeout(()=>{ duckImg.src = "duck.png"; }, 120);
+  }
+
+  duck.addEventListener("mousedown", handleDown);
+  duck.addEventListener("touchstart", handleDown, {passive:false});
+
+  window.addEventListener("mousemove", handleMove);
+  window.addEventListener("touchmove", handleMove, {passive:false});
+
+  window.addEventListener("mouseup", handleUp);
+  window.addEventListener("touchend", handleUp);
+  window.addEventListener("touchcancel", handleUp);
+
+  duckImg.addEventListener("dragstart", e => e.preventDefault());
+</script>
+
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>week7</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;700&family=Numans&display=swap" rel="stylesheet">
+
+  <style>
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      background:#ffffff;
+      font-family:'Numans',sans-serif;
+      overflow:hidden;
+      position:relative;
+    }
+
+    .back{
+      position:fixed;
+      top:24px;
+      left:24px;
+      font-size:16px;
+      font-family:'Numans',sans-serif;
+      color:#666;
+      text-decoration:none;
+      z-index:1000;
+    }
+
+    #btn-clear-footprints{
+      position:fixed;
+      top:24px;
+      right:24px;
+      padding:8px 14px;
+      border-radius:10px;
+      border:1px solid #e0e0e0;
+      background:#fafafa;
+      cursor:pointer;
+      font-family:'Numans',sans-serif;
+      font-size:14px;
+      color:#111;
+      z-index:1000;
+    }
+
+    #stage{
+      position:absolute;
+      inset:0;
+      cursor:pointer;
+    }
+
+    .footprint{
+      position:absolute;
+      width:85px;
+      max-width:20vw;
+      pointer-events:none;
+      transform:translate(-50%, -50%);
+    }
+
+    #player{
+      position:fixed;
+      bottom:32px;
+      left:50%;
+      transform:translateX(-50%);
+      display:flex;
+      align-items:center;
+      gap:40px;
+      z-index:1000;
+    }
+
+    .player-btn{
+      border:none;
+      background:transparent;
+      padding:0;
+      cursor:pointer;
+
+      width:48px;
+      height:48px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .player-btn img{
+      max-width:100%;
+      max-height:100%;
+      display:block;
+    }
+
+    @media (max-width:600px){
+      .player-btn{
+        width:40px;
+        height:40px;
+      }
+      .footprint{
+        width:65px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="collection.html" class="back">< back</a>
+
+  <button id="btn-clear-footprints">clear all</button>
+
+  <div id="stage"></div>
+
+  <div id="player">
+    <button id="btn-prev" class="player-btn">
+      <img src="before.png" alt="previous">
+    </button>
+
+    <button id="btn-play" class="player-btn">
+      <img id="play-icon" src="play.png" alt="play / pause">
+    </button>
+
+    <button id="btn-next" class="player-btn">
+      <img src="next.png" alt="next">
+    </button>
+  </div>
+
+  <script>
+    const stage = document.getElementById("stage");
+
+    const footprintImages = [
+      "footprint1.png","footprint2.png","footprint3.png","footprint4.png",
+      "footprint5.png","footprint6.png","footprint7.png","footprint8.png",
+      "footprint9.png","footprint10.png","footprint11.png","footprint12.png",
+      "footprint13.png","footprint14.png","footprint15.png","footprint16.png",
+      "footprint17.png","footprint18.png"
+    ];
+
+    stage.addEventListener("click", (e) => {
+      const rect = stage.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const img = document.createElement("img");
+      img.src = footprintImages[Math.floor(Math.random() * footprintImages.length)];
+      img.className = "footprint";
+
+      img.style.left = x + "px";
+      img.style.top = y + "px";
+
+      const angle = (Math.random() * 60) - 30;
+      img.style.transform += ` rotate(${angle}deg)`;
+
+      stage.appendChild(img);
+    });
+
+    document.getElementById("btn-clear-footprints").addEventListener("click", () => {
+      const footprints = document.querySelectorAll(".footprint");
+      footprints.forEach(fp => fp.remove());
+    });
+
+    const tracks = ["song1.mp3", "song2.mp3", "song3.mp3", "song4.mp3"];
+    let index = 0;
+
+    const audio = new Audio(tracks[index]);
+    audio.preload = "metadata";
+
+    const btnPrev = document.getElementById("btn-prev");
+    const btnPlay = document.getElementById("btn-play");
+    const btnNext = document.getElementById("btn-next");
+    const playIcon = document.getElementById("play-icon");
+
+    function updateIcon(isPlaying){
+      playIcon.src = isPlaying ? "pause.png" : "play.png";
+    }
+
+    function loadTrack(i, autoplay){
+      index = (i + tracks.length) % tracks.length;
+      audio.src = tracks[index];
+      if(autoplay){
+        audio.play();
+        updateIcon(true);
+      }else{
+        updateIcon(false);
+      }
+    }
+
+    btnPlay.addEventListener("click", () => {
+      if(audio.paused){
+        audio.play();
+        updateIcon(true);
+      }else{
+        audio.pause();
+        updateIcon(false);
+      }
+    });
+
+    btnPrev.addEventListener("click", () => {
+      loadTrack(index - 1, true);
+    });
+
+    btnNext.addEventListener("click", () => {
+      loadTrack(index + 1, true);
+    });
+
+    audio.addEventListener("ended", () => {
+      loadTrack(index + 1, true);
+    });
+  </script>
+
+</body>
+</html>

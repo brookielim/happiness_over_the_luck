@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>week10</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;700&family=Numans&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;  
+      align-items: center;
+      background: #ffffff;
+      font-family: "Montserrat Alternates", sans-serif;
+    }
+
+    .back {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      font-size: 16px;
+      font-family: "Numans", sans-serif;
+      color: #666;
+      text-decoration: none;
+      z-index: 20;
+    }
+
+    h1 {
+      font-size: 18px;
+      margin: 20px 0 60px; 
+      font-weight: 700;
+      text-align: center;
+      text-transform: lowercase;
+    }
+
+    .polaroid-row {
+      display: flex;
+      gap: 140px;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .polaroid {
+      position: relative;
+      width: 340px;
+    }
+
+    .polaroid .frame {
+      width: 100%;
+      display: block;
+      pointer-events: none;
+    }
+
+    .polaroid .slot {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 81.5%;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      cursor: pointer;
+      top: 36%;
+    }
+
+    .polaroid.p1 .slot { top: 10.5%; }
+    .polaroid.p2 .slot { top: 16.8%; }
+    .polaroid.p3 .slot { top: 10.5%; }
+
+    .slot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .slot.has-image img {
+      opacity: 1;
+    }
+
+    .placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #999;
+      font-family: "Numans", sans-serif;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+
+      body {
+        justify-content: flex-start;
+        padding: 80px 0 40px;
+      }
+
+      .back {
+        top: 12px;
+        left: 16px;
+        font-size: 14px;
+      }
+
+      h1 {
+        margin: 20px 16px 40px;
+        font-size: 16px;
+        padding: 0 16px;
+      }
+
+      .polaroid-row {
+        flex-direction: column;
+        gap: 40px;
+        align-items: center;
+      }
+
+      .polaroid {
+        width: 260px;  
+      }
+
+      .placeholder {
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<a href="collection.html" class="back">< back</a>
+
+<h1>upload photos you took during a short walk</h1>
+
+<div class="polaroid-row">
+
+  <div class="polaroid p1">
+    <img src="photo1.png" alt="frame 1" class="frame">
+    <div class="slot">
+      <img alt="photo 1">
+      <div class="placeholder">click to add a photo</div>
+      <input type="file" accept="image/*">
+    </div>
+  </div>
+
+  <div class="polaroid p2">
+    <img src="photo2.png" alt="frame 2" class="frame">
+    <div class="slot">
+      <img alt="photo 2">
+      <div class="placeholder">click to add a photo</div>
+      <input type="file" accept="image/*">
+    </div>
+  </div>
+
+  <div class="polaroid p3">
+    <img src="photo3.png" alt="frame 3" class="frame">
+    <div class="slot">
+      <img alt="photo 3">
+      <div class="placeholder">click to add a photo</div>
+      <input type="file" accept="image/*">
+    </div>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll(".polaroid .slot").forEach(slot => {
+    const input = slot.querySelector("input[type='file']");
+    const img = slot.querySelector("img");
+    const placeholder = slot.querySelector(".placeholder");
+
+    slot.addEventListener("click", () => input.click());
+
+    input.addEventListener("change", () => {
+      const file = input.files[0];
+      if (!file) return;
+
+      const url = URL.createObjectURL(file);
+      img.src = url;
+      slot.classList.add("has-image");
+      placeholder.style.display = "none";
+    });
+  });
+</script>
+
+</body>
+</html>

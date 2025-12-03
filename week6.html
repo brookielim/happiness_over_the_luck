@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>week6</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Numans&display=swap" rel="stylesheet">
+
+  <style>
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;      /* 항상 가운데! */
+      background:#ffffff;
+      font-family:'Numans',sans-serif;
+      overflow-x:hidden;
+    }
+
+    .back{
+      position:fixed;
+      top:24px;
+      left:24px;
+      font-size:16px;
+      color:#666;
+      text-decoration:none;
+      z-index:10;
+    }
+
+    /* 디자인 기준: 가로 1000px 패드 */
+    .pad-wrap{
+      position:relative;
+      width:1000px;
+      max-width:95vw;          /* 화면 좁으면 자동 축소 */
+      margin:0 auto;
+    }
+
+    .pad-outline{
+      position:relative;
+      width:100%;
+      display:block;
+      z-index:3;
+      pointer-events:none;
+    }
+
+    .pad-base{
+      position:absolute;
+      top:51%;
+      left:50%;
+      width:97%;
+      transform:translate(-50%,-50%);
+      z-index:1;
+    }
+
+    /* 💬 채팅 영역 – 기준 값 */
+    .heart-area{
+      position:absolute;
+      top:80px;
+      left:100px;
+      width:calc(100% - 200px);
+      height:calc(100% - 120px);
+      overflow:hidden;
+      pointer-events:none;
+      z-index:2;
+    }
+
+    /* 💗 하트 버튼 – 기준 위치 */
+    .heart-button{
+      position:absolute;
+      bottom:210px;
+      left:319px;
+      background:transparent;
+      border:none;
+      cursor:pointer;
+      z-index:4;
+    }
+
+    .heart-button img{
+      width:64px;
+      height:auto;
+      display:block;
+    }
+
+    .heart{
+      position:absolute;
+      width:64px;
+      height:auto;
+      top:-80px;
+      animation:fall var(--dur) linear forwards;
+    }
+
+    @keyframes fall{
+      from{ top:-80px; }
+      to{ top:120%; }
+    }
+
+    /* 📱 모바일에서도 중앙 유지, 살짝만 내려주기 */
+    @media (max-width: 768px){
+      body{
+        align-items:center;
+        padding-top:20px;   /* back 텍스트랑 살짝 간격 */
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <a href="collection.html" class="back">&lt; back</a>
+
+  <div class="pad-wrap" id="padWrap">
+    <img src="padoutline.png" class="pad-outline" alt="pad outline">
+    <img src="pad.png"       class="pad-base"    alt="chat screen">
+
+    <div id="heart-area" class="heart-area"></div>
+
+    <button id="heart-button" class="heart-button">
+      <img id="heart-img" src="heartbutton.png" alt="heart button">
+    </button>
+  </div>
+
+  <script>
+    const heartArea   = document.getElementById('heart-area');
+    const heartButton = document.getElementById('heart-button');
+    const heartImg    = document.getElementById('heart-img');
+    const padWrap     = document.getElementById('padWrap');
+
+    const heartImages = [
+      'heart1.png','heart2.png','heart3.png','heart4.png',
+      'heart5.png','heart6.png','heart7.png','heart8.png'
+    ];
+
+    // 🎨 디자인 기준 값
+    const BASE_WIDTH          = 1000;
+    const BASE_AREA_TOP       = 80;
+    const BASE_AREA_LEFT      = 100;
+    const BASE_AREA_H_MARGIN  = 200;
+    const BASE_AREA_V_MARGIN  = 120;
+    const BASE_BTN_LEFT       = 319;
+    const BASE_BTN_BOTTOM     = 210;
+    const BASE_BTN_WIDTH      = 64;
+    const BASE_HEART_SIZE     = 64;
+
+    let currentScale = 1;
+
+    function updateLayout(){
+      const padWidth  = padWrap.clientWidth;
+      const padHeight = padWrap.clientHeight || padWrap.getBoundingClientRect().height;
+
+      currentScale = padWidth / BASE_WIDTH;
+
+      // 💬 하트 떨어지는 영역 비율 조정
+      const areaTop  = BASE_AREA_TOP * currentScale;
+      const areaLeft = BASE_AREA_LEFT * currentScale;
+      const areaW    = padWidth  - (BASE_AREA_H_MARGIN * currentScale);
+      const areaH    = padHeight - (BASE_AREA_V_MARGIN * currentScale);
+
+      heartArea.style.top    = areaTop + 'px';
+      heartArea.style.left   = areaLeft + 'px';
+      heartArea.style.width  = areaW   + 'px';
+      heartArea.style.height = areaH   + 'px';
+
+      // 💗 하트 버튼 위치 & 크기
+      heartButton.style.left   = (BASE_BTN_LEFT * currentScale)   + 'px';
+      heartButton.style.bottom = (BASE_BTN_BOTTOM * currentScale) + 'px';
+      heartImg.style.width     = (BASE_BTN_WIDTH * currentScale)  + 'px';
+    }
+
+    window.addEventListener('load', updateLayout);
+    window.addEventListener('resize', updateLayout);
+
+    function dropHearts(){
+      const count     = 12;
+      const areaWidth = heartArea.clientWidth;
+      const heartSize = BASE_HEART_SIZE * currentScale;
+
+      for(let i=0;i<count;i++){
+        const img = document.createElement('img');
+        img.className = 'heart';
+        img.src = heartImages[Math.floor(Math.random()*heartImages.length)];
+
+        img.style.width = heartSize + 'px';
+
+        const x = Math.random() * (areaWidth - heartSize);
+        img.style.left = x + 'px';
+
+        const dur = 1.6 + Math.random()*1.0;
+        img.style.setProperty('--dur', dur + 's');
+
+        img.style.animationDelay = (i*0.1) + 's';
+
+        heartArea.appendChild(img);
+
+        img.addEventListener('animationend', () => {
+          img.remove();
+        });
+      }
+    }
+
+    heartButton.addEventListener('click', dropHearts);
+  </script>
+</body>
+</html>
