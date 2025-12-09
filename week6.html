@@ -15,7 +15,7 @@
       min-height:100vh;
       display:flex;
       justify-content:center;
-      align-items:center;      /* 항상 가운데! */
+      align-items:center;      
       background:#ffffff;
       font-family:'Numans',sans-serif;
       overflow-x:hidden;
@@ -31,11 +31,10 @@
       z-index:10;
     }
 
-    /* 디자인 기준: 가로 1000px 패드 */
     .pad-wrap{
       position:relative;
       width:1000px;
-      max-width:95vw;          /* 화면 좁으면 자동 축소 */
+      max-width:95vw;         
       margin:0 auto;
     }
 
@@ -56,7 +55,6 @@
       z-index:1;
     }
 
-    /* 💬 채팅 영역 – 기준 값 */
     .heart-area{
       position:absolute;
       top:80px;
@@ -68,7 +66,6 @@
       z-index:2;
     }
 
-    /* 💗 하트 버튼 – 기준 위치 */
     .heart-button{
       position:absolute;
       bottom:210px;
@@ -98,11 +95,10 @@
       to{ top:120%; }
     }
 
-    /* 📱 모바일에서도 중앙 유지, 살짝만 내려주기 */
     @media (max-width: 768px){
       body{
         align-items:center;
-        padding-top:20px;   /* back 텍스트랑 살짝 간격 */
+        padding-top:20px;   
       }
     }
   </style>
@@ -133,7 +129,6 @@
       'heart5.png','heart6.png','heart7.png','heart8.png'
     ];
 
-    // 🎨 디자인 기준 값
     const BASE_WIDTH          = 1000;
     const BASE_AREA_TOP       = 80;
     const BASE_AREA_LEFT      = 100;
@@ -152,7 +147,6 @@
 
       currentScale = padWidth / BASE_WIDTH;
 
-      // 💬 하트 떨어지는 영역 비율 조정
       const areaTop  = BASE_AREA_TOP * currentScale;
       const areaLeft = BASE_AREA_LEFT * currentScale;
       const areaW    = padWidth  - (BASE_AREA_H_MARGIN * currentScale);
@@ -163,7 +157,6 @@
       heartArea.style.width  = areaW   + 'px';
       heartArea.style.height = areaH   + 'px';
 
-      // 💗 하트 버튼 위치 & 크기
       heartButton.style.left   = (BASE_BTN_LEFT * currentScale)   + 'px';
       heartButton.style.bottom = (BASE_BTN_BOTTOM * currentScale) + 'px';
       heartImg.style.width     = (BASE_BTN_WIDTH * currentScale)  + 'px';
